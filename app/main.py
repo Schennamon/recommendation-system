@@ -16,7 +16,6 @@ item_id_to_num = {item_id: i for i, item_id in enumerate(item_ids)}
 df['user'] = df['user'].map(user_id_to_num)
 df['item'] = df['item'].map(item_id_to_num)
 
-# Припускаючи, що стовпець 'rating' у df містить оцінки користувачів
 train_data, test_data = train_test_split(df[['user', 'item', 'rating']], test_size=0.2)
 train_data.to_csv('train.csv', index=False, header=False)
 test_data.to_csv('test.csv', index=False, header=False)
@@ -38,16 +37,12 @@ try:
 except Exception as e:
     print("Error occurred:", e)
 
-# Завантаження прогнозів та тестових даних
 predictions = pd.read_csv('output_predictions.csv', header=None, names=['user', 'item', 'rating_predicted'])
 test_data = pd.read_csv('test.csv', header=None, names=['user', 'item', 'rating_actual'])
 
-# Об'єднання даних
 merged = pd.merge(test_data, predictions, on=['user', 'item'], how='inner')
 
-# Перевірка, чи об'єднані датафрейми не порожні
 if not merged.empty:
-    # Обчислення RMSE
     rmse = sqrt(mean_squared_error(merged['rating_actual'], merged['rating_predicted']))
     print(f'RMSE: {rmse}')
 else:
